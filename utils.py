@@ -29,7 +29,6 @@ def unescaped_str(url: str) -> str:
 
 
 def get_df() -> pd.DataFrame:
-    DEFAULT_CSV_PATH = "dataset/cmpd.csv"
     csv_url = get_option()
 
     if not os.path.exists(DEFAULT_CSV_PATH) and not csv_url:
