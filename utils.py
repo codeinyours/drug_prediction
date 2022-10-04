@@ -1,8 +1,13 @@
+import argparse
+from typing import Optional
 import numpy as np
+import pandas as pd
 from pandas import DataFrame
 from rdkit.Chem import AllChem
 from sklearn import metrics
 from tabulate import tabulate
+import os
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -14,6 +19,40 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+
+DEFAULT_CSV_PATH = "dataset/cmpd.csv"
+
+
+def unescaped_str(url: str) -> str:
+    return url.replace('\\', '')
+
+
+def get_df() -> pd.DataFrame:
+    DEFAULT_CSV_PATH = "dataset/cmpd.csv"
+    csv_url = get_option()
+
+    if not os.path.exists(DEFAULT_CSV_PATH) and not csv_url:
+        raise FileNotFoundError(f'dataset 디렉토리 아래에 cmpd.csv가 존재하지 않습니다.\n\t'
+                                f'1. {bcolors.BOLD}dataset 디렉토리에 데이터셋이 존재하는지\n\t'
+                                f'2. 파일명에 문제가 있는지 확인해주세요.{bcolors.ENDC}')
+
+    df = pd.read_csv(csv_url if csv_url else DEFAULT_CSV_PATH)
+
+    return df
+
+
+def get_option() -> Optional[str]:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--url',
+                        required=False,
+                        default=None,
+                        type=unescaped_str,
+                        help='compound dataset을 다운로드할 수 있는 URL 주소'
+                        )
+
+    args = parser.parse_args()
+    return args.url
 
 
 def get_data(df: DataFrame):
